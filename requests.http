@@ -1,0 +1,36 @@
+### Try the API from VS Code (REST Client) or JetBrains Rider / Visual Studio.
+@base = http://localhost:5077
+
+### List configured workflows
+GET {{base}}/api/workflows
+X-Api-Key: demo-ada-requester
+
+### Ada submits an expense (₦750,000: Line Manager -> Finance)
+# @name submit
+POST {{base}}/api/requests/
+X-Api-Key: demo-ada-requester
+Content-Type: application/json
+
+{ "workflow": "expense", "title": "Team offsite venue", "amount": 750000, "currency": "NGN" }
+
+### Bayo (manager) sees what is waiting for him
+GET {{base}}/api/requests/?awaitingMe=true
+X-Api-Key: demo-bayo-manager
+
+### Bayo approves
+POST {{base}}/api/requests/{{submit.response.body.id}}/approve
+X-Api-Key: demo-bayo-manager
+Content-Type: application/json
+
+{ "comment": "Within budget" }
+
+### Chidi (finance) approves - request completes
+POST {{base}}/api/requests/{{submit.response.body.id}}/approve
+X-Api-Key: demo-chidi-finance
+Content-Type: application/json
+
+{}
+
+### Full audit trail
+GET {{base}}/api/requests/{{submit.response.body.id}}/audit
+X-Api-Key: demo-ada-requester
